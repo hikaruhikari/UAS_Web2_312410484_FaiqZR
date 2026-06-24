@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Report - Sistem Pengaduan Masyarakat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div id="app">
+        <nav class="bg-blue-600 text-white shadow-md">
+            <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <router-link to="/" class="text-xl font-bold tracking-wider">📢 E-REPORT</router-link>
+                <div class="space-x-4 flex items-center">
+                    <router-link to="/" class="hover:text-blue-200 transition py-2 px-3">Beranda</router-link>
+                    
+                    <router-link v-if="!isLoggedIn" to="/login" class="bg-white text-blue-600 font-semibold px-4 py-2 rounded shadow hover:bg-gray-100 transition">Login Admin</router-link>
+                    
+                    <router-link v-if="isLoggedIn" to="/dashboard" class="hover:text-blue-200 transition py-2 px-3 font-semibold text-yellow-300">📁 Dashboard</router-link>
+                    <button v-if="isLoggedIn" @click="logout" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded shadow transition">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container mx-auto px-6 py-8">
+            <router-view></router-view>
+        </main>
+    </div>
+
+    <script>
+        // Alamat base URL backend API CI4 kamu, sesuaikan jika port-nya berbeda
+        const API_URL = 'http://localhost:8080/api';
+
+        // Konfigurasi global Axios Interceptors (Sesuai Praktikum 14)
+        // 1. Request Interceptor: Menyisipkan token secara otomatis ke setiap rute API
+        axios.interceptors.request.use(config => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+            return config;
+        }, error => {
+            return Promise.reject(error);
+        });
+
+        // 2. Response Interceptor: Menangkap error 401 secara global jika sesi habis
+        axios.interceptors.response.use(response => response, error => {
+            if (error.response && error.response.status === 401) {
+                alert('Sesi Anda telah habis atau token tidak valid. Silakan login kembali.');
+                localStorage.clear();
+                window.location.hash = '/login'; // mental ke halaman login
+            }
+            return Promise.reject(error);
+        });
+    </script>
+
+    <script src="components/Home.js"></script>
+    <script src="components/Login.js"></script>
+    <script src="components/Dashboard.js"></script>
+
+    <script>
+        const routes = [
+            { path: '/', component: Home },
+            { path: '/login', component: Login },
+            { 
+                path: '/dashboard', 
+                component: Dashboard,
+                meta: { requiresAuth: true } // Proteksi halaman admin
+            }
+        ];
+
+        const router = VueRouter.createRouter({
+            history: VueRouter.createWebHashHistory(),
+            routes
+        });
+
+        // Navigation Guards (Sesuai Praktikum 13)
+        router.beforeEach((to, from, next) => {
+            const loggedIn = localStorage.getItem('token');
+            if (to.matched.some(record => record.meta.requiresAuth) && !loggedIn) {
+                alert('Akses ditolak! Anda harus login terlebih dahulu.');
+                next('/login');
+            } else {
+                next();
+            }
+        });
+
+        // Membuat instance aplikasi Vue
+        const app = Vue.createApp({
+            data() {
+                return {
+                    isLoggedIn: !!localStorage.getItem('token')
+                }
+            },
+            mounted() {
+                // Sinkronisasi status login jika ada perubahan rute
+                window.addEventListener('storage', () => {
+                    this.isLoggedIn = !!localStorage.getItem('token');
+                });
+            },
+            methods: {
+                logout() {
+                    localStorage.clear();
+                    this.isLoggedIn = false;
+                    alert('Berhasil logout!');
+                    router.push('/login');
+                }
+            }
+        });
+
+        app.use(router);
+        app.mount('#app');
+    </script>
+</body>
+</html>
