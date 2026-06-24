@@ -26,3 +26,19 @@ ini halaman utama saat belum login
 
 ini halaman login dan pesan saat login berhasil
 
+<img width="1920" height="1080" alt="Screenshot (1409)" src="https://github.com/user-attachments/assets/a8705e4d-a4c8-4c4e-acdc-96d476d52ce1" />
+
+<img width="1920" height="1080" alt="Screenshot (1410)" src="https://github.com/user-attachments/assets/7500f055-8405-4757-a4f5-4dd7882a5e5e" />
+
+ini halaman dashboard dengan sistem tambah pangaduan dan pesan sukses menyimpan
+
+<img width="1920" height="1080" alt="Screenshot (1412)" src="https://github.com/user-attachments/assets/47ecf29a-c5af-445b-9da7-1fd7b0807bd4" />
+
+<img width="1920" height="1080" alt="Screenshot (1413)" src="https://github.com/user-attachments/assets/e6924d1e-ac73-46e5-93af-4212acd5fb06" />
+
+ini halaman dashboard dan utama saat proses input berhasil, disitu menampilkan data aduan
+
+## Proses Menjalankan frontend dan backend
+
+### Backend
+
