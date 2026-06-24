@@ -2,21 +2,20 @@
 
 Aplikasi ini merupakan platform berbasis web yang memisahkan antara Backend (RESTful API) dan Frontend (Single Page Application) agar sistem berjalan dengan aman. Berfungsi untuk mendokumentasikan serta mengelola status aduan masyarakat secara real-time.
 
-## 🛠️ Petunjuk Instalasi & Cara Menjalankan Proyek
+## Dokumentesi database
 
-Aplikasi ini menggunakan **Decoupled Architecture**, sehingga proses instalasi dan penjalisannya dibagi menjadi dua sisi: Sisi Backend (API Server) dan Sisi Frontend (Single Page Application).
+<img width="1090" height="754" alt="Screenshot (1402)" src="https://github.com/user-attachments/assets/94d429a3-747f-495f-8aeb-64958c2c1a9b" />
 
-### 1. Persiapan Basis Data (Database)
-1. Aktifkan modul **Apache** dan **MySQL** pada panel kontrol XAMPP kamu.
-2. Buka browser dan akses halaman **phpMyAdmin** (`http://localhost/phpmyadmin`).
-3. Buat database baru dengan nama `ereport`.
-4. Pilih database `ereport`, klik tab **Import**, lalu pilih file database `.sql` proyek ini (kamu bisa menyertakan file SQL hasil ekspor basis datamu di dalam repositori). Klik **Go/Kirim**.
+foto ini menampilkan relasi antar tabel dalam database
 
----
+## Dokumentasi Postman
 
-### 2. Konfigurasi & Menjalankan Backend API (CodeIgniter 4)
-Server Backend murni berfungsi sebagai penyedia layanan RESTful API data pengaduan masyarakat.
+<img width="1920" height="1080" alt="Screenshot (1403)" src="https://github.com/user-attachments/assets/1b900aca-e689-4f8a-b598-798308511f44" />
 
-1. Buka terminal atau command prompt, lalu masuk ke dalam folder backend proyek:
-   ```bash
-   cd backend-api
+dengan menggunakan link di atas Postman tidak bisa mendapatkan akses ke aplikasi e-Report
+
+## Dokumentasi Tampilan Aplikasi
+
+<img width="1920" height="1080" alt="Screenshot (1404)" src="https://github.com/user-attachments/assets/b9401601-039f-4d86-9af5-05afbb13081f" />
+
+halaman
