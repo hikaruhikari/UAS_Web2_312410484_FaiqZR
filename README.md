@@ -42,3 +42,27 @@ ini halaman dashboard dan utama saat proses input berhasil, disitu menampilkan d
 
 ### Backend
 
+Backend menggunakan codeigniter 4 versi 4.7.3, ada beberapa penambahan sistem agar aplikasi bisa berjalan:
+
+1. Menjalankan XAMPP
+2. Menambahkan database baru beserta tabelnya
+3. Mengubah beberapa kode env dan menggantinya namanya menjadi .env
+4. Menambahkan folder uploads di folder public
+5. Menambah dan mengubah beberapa kode dari file yang sudah ada seperti Routes dan Filters
+6. membuat beberapa file agar aplikasi bisa berjalan dengan baik
+
+Agar backend bisa berjalan, ada langkah untuk melakukannya
+
+1. Buka folder backend-api di komputer/laptop
+2. Klik direktori dan ketik cmd yang akan membuka command prompt beserta direktori backend-api
+3. ketik "php spark serve" pada cmd agar backend mulai berjalan
+
+### Frontend
+
+Frontend menggunakan VueJS 3 & TailwindCSS, berikut penjelasannya
+
+1. Membuat file index.html sebagai sistem utama saat membuka web
+2. Membuat beberapa file .js untuk berbagai halaman
+3. Bisa diakses dengan localhost atau langsung di index.html (klik 2 kali
+
+## link youtube
