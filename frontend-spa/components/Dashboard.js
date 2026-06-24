@@ -26,9 +26,51 @@ const Dashboard = {
                 </div>
             </div>
 
+            <div class="bg-white rounded-lg shadow overflow-hidden mb-8 border border-blue-100">
+                <div class="px-6 py-4 bg-blue-50 border-b border-blue-100">
+                    <h2 class="text-lg font-bold text-blue-800">➕ Form Tambah Pengaduan Baru (Sisi Masyarakat)</h2>
+                    <p class="text-xs text-blue-600">Gunakan form ini untuk mengambil screenshot simulasi input data aduan baru.</p>
+                </div>
+                <form @submit.prevent="submitComplaint" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Judul Laporan</label>
+                            <input v-model="form.judul_laporan" type="text" required placeholder="Contoh: Pipa Air Bocor di Jalan Merdeka"
+                                class="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Kategori Pengaduan</label>
+                            <select v-model="form.id_kategori" required class="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="" disabled>-- Pilih Kategori --</option>
+                                <option v-for="cat in categories" :key="cat.id_kategori" :value="cat.id_kategori">
+                                    {{ cat.nama_kategori }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Foto Bukti (.jpg / .png)</label>
+                            <input type="file" ref="fileInput" @change="handleFileUpload" required accept="image/*"
+                                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-between">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Isi Laporan / Deskripsi Kejadian</label>
+                            <textarea v-model="form.isi_laporan" rows="4" required placeholder="Jelaskan secara rinci kronologi masalah fasilitas umum..."
+                                class="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                        </div>
+                        <div class="text-right mt-4">
+                            <button type="submit" :disabled="submitting" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-6 py-2 rounded shadow transition disabled:bg-blue-300">
+                                {{ submitting ? 'Mengirim Laporan...' : '🚀 Kirim Pengaduan' }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
             <div class="bg-white rounded-lg shadow overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-gray-700">Daftar Pengaduan Masuk</h2>
+                    <h2 class="text-lg font-bold text-gray-700">Daftar Pengaduan Masuk (Manajemen Operasi)</h2>
                     <button @click="fetchData" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded transition">🔄 Segarkan Data</button>
                 </div>
 
@@ -40,7 +82,7 @@ const Dashboard = {
                                 <th class="px-6 py-3 font-semibold">Pelapor & Tanggal</th>
                                 <th class="px-6 py-3 font-semibold">Kategori & Judul</th>
                                 <th class="px-6 py-3 font-semibold">Foto Bukti</th>
-                                <th class="px-6 py-3 font-semibold">Status</th>
+                                <th class="px-6 py-3 font-semibold">Status (Edit/PUT)</th>
                                 <th class="px-6 py-3 font-semibold text-center">Aksi Operasi</th>
                             </tr>
                         </thead>
@@ -54,6 +96,7 @@ const Dashboard = {
                                 <td class="px-6 py-4">
                                     <span class="bg-blue-50 text-blue-600 text-xs font-bold px-2 py-0.5 rounded mb-1 inline-block">{{ item.nama_kategori }}</span>
                                     <div class="font-medium text-gray-700">{{ item.judul_laporan }}</div>
+                                    <p class="text-xs text-gray-400 mt-1 max-w-xs truncate">{{ item.isi_laporan }}</p>
                                 </td>
                                 <td class="px-6 py-4">
                                     <img :src="'http://localhost:8080/uploads/' + item.foto_bukti" class="w-16 h-12 object-cover rounded border border-gray-200 shadow-sm">
@@ -88,11 +131,20 @@ const Dashboard = {
     `,
     data() {
         return {
-            complaints: []
+            complaints: [],
+            categories: [],
+            submitting: false,
+            form: {
+                judul_laporan: '',
+                id_kategori: '',
+                isi_laporan: '',
+                foto_bukti: null
+            }
         }
     },
     mounted() {
         this.fetchData();
+        this.fetchCategories();
     },
     methods: {
         fetchData() {
@@ -104,27 +156,74 @@ const Dashboard = {
                     console.error("Gagal menarik data master pengaduan:", error);
                 });
         },
+        fetchCategories() {
+            // Mengambil daftar kategori dari API untuk dimasukkan ke select dropdown form
+            axios.get(`${API_URL}/kategori`)
+                .then(response => {
+                    this.categories = response.data.data;
+                })
+                .catch(error => {
+                    console.error("Gagal memuat kategori:", error);
+                });
+        },
+        handleFileUpload(event) {
+            this.form.foto_bukti = event.target.files[0];
+        },
+        submitComplaint() {
+            this.submitting = true;
+
+            // Karena ada upload file fisik, kita wajib menggunakan FormData objek (Arsitektur REST Multipart)
+            const formData = new FormData();
+            formData.append('id_user', localStorage.getItem('user_id') || '1'); // otomatis mengambil id user yang sedang login
+            formData.append('id_kategori', this.form.id_kategori);
+            formData.append('judul_laporan', this.form.judul_laporan);
+            formData.append('isi_laporan', this.form.isi_laporan);
+            formData.append('foto_bukti', this.form.foto_bukti);
+
+            axios.post(`${API_URL}/pengaduan`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+            .then(response => {
+                alert('Sukses! Laporan pengaduan baru berhasil diinput langsung ke server.');
+                
+                // Reset Form input setelah sukses
+                this.form.judul_laporan = '';
+                this.form.id_kategori = '';
+                this.form.isi_laporan = '';
+                this.form.foto_bukti = null;
+                this.$refs.fileInput.value = ''; // mengosongkan input file fisik
+
+                this.submitting = false;
+                this.fetchData(); // Refresh isi tabel agar laporan baru langsung muncul di bawah
+            })
+            .catch(error => {
+                this.submitting = false;
+                alert('Gagal menambah laporan. Periksa ekstensi file atau ukuran data Anda.');
+                console.error(error);
+            });
+        },
         updateStatus(id, newStatus) {
-            // Mengirim data baru menggunakan metode PUT (X-WWW-FORM-URLENCODED) lewat Axios
             const params = new URLSearchParams();
             params.append('status', newStatus);
 
             axios.put(`${API_URL}/pengaduan/${id}`, params)
                 .then(response => {
                     alert('Status laporan sukses diperbarui!');
-                    this.fetchData(); // Refresh tampilan data tabel
+                    this.fetchData();
                 })
                 .catch(error => {
-                    alert('Gagal memperbarui status. Sesi mungkin kedaluwarsa.');
+                    alert('Gagal memperbarui status.');
                     console.error(error);
                 });
         },
         deleteComplaint(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus permanen laporan aduan ini beserta file gambarnya dari server?')) {
+            if (confirm('Apakah Anda yakin ingin menghapus permanen laporan aduan ini?')) {
                 axios.delete(`${API_URL}/pengaduan/${id}`)
                     .then(response => {
-                        alert('Laporan pengaduan berhasil dihapus dari database.');
-                        this.fetchData(); // Refresh data tabel
+                        alert('Laporan pengaduan berhasil dihapus.');
+                        this.fetchData();
                     })
                     .catch(error => {
                         alert('Operasi hapus gagal.');
