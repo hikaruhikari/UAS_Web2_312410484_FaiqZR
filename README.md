@@ -66,3 +66,9 @@ Frontend menggunakan VueJS 3 & TailwindCSS, berikut penjelasannya
 3. Bisa diakses dengan localhost atau langsung di index.html (klik 2 kali
 
 ## link youtube
+
+Video Youtube tata cara penggunaan aplikasi: https://youtu.be/sVhLWNIh1a0
+
+## Penutup
+
+Cukup penjelasannya terima kasih
